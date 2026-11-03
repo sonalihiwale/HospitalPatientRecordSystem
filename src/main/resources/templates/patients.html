@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Hospital - Patient Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f7fb;
+            font-family: Arial, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(90deg, #123b70, #1976d2);
+        }
+
+        .dashboard-title {
+            color: #123b70;
+            font-weight: 700;
+        }
+
+        .stat-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .stat-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .table thead th {
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+        }
+
+        .action-buttons {
+            min-width: 180px;
+        }
+
+        .section-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+
+        .footer-text {
+            color: #6c757d;
+            font-size: 13px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-dark shadow-sm">
+    <div class="container-fluid px-4">
+
+        <span class="navbar-brand fw-bold">
+            Hospital Patient Record System
+        </span>
+
+        <form th:action="@{/logout}" method="post">
+
+            <input type="hidden"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+
+            <button class="btn btn-light btn-sm px-3"
+                    type="submit">
+                Logout
+            </button>
+
+        </form>
+
+    </div>
+</nav>
+
+
+<!-- Main Dashboard -->
+<div class="container-fluid px-4 mt-4">
+
+    <!-- Heading -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+        <div>
+            <h2 class="dashboard-title mb-1">
+                Patient Dashboard
+            </h2>
+
+            <p class="text-muted mb-0">
+                Manage hospital patient records
+            </p>
+        </div>
+
+        <a th:href="@{/patients/new}"
+           class="btn btn-success mt-2">
+            + Add New Patient
+        </a>
+
+    </div>
+
+
+    <!-- Success Message -->
+    <div th:if="${successMessage}"
+         class="alert alert-success alert-dismissible fade show"
+         role="alert">
+
+        <span th:text="${successMessage}"></span>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert">
+        </button>
+
+    </div>
+
+
+    <!-- Patient Count Card -->
+    <div class="row mb-4">
+
+        <div class="col-md-4 col-sm-6">
+
+            <div class="card stat-card">
+                <div class="card-body">
+
+                    <h6 class="text-muted">
+                        Displayed Patient Records
+                    </h6>
+
+                    <div class="stat-number"
+                         th:text="${#lists.size(patients)}">
+                        0
+                    </div>
+
+                    <small class="text-muted">
+                        Records matching the current view
+                    </small>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Search Section -->
+    <div class="card section-card mb-4">
+
+        <div class="card-body">
+
+            <h5 class="dashboard-title mb-3">
+                Search Patient
+            </h5>
+
+            <form th:action="@{/patients}"
+                  method="get">
+
+                <div class="row g-2">
+
+                    <div class="col-md-9">
+
+                        <input type="text"
+                               name="keyword"
+                               th:value="${keyword}"
+                               class="form-control"
+                               placeholder="Enter patient name to search">
+
+                    </div>
+
+                    <div class="col-md-3 d-flex gap-2">
+
+                        <button class="btn btn-primary w-100"
+                                type="submit">
+                            Search
+                        </button>
+
+                        <a th:href="@{/patients}"
+                           class="btn btn-secondary w-100">
+                            Clear
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Patient Records Table -->
+    <div class="card section-card mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h5 class="dashboard-title mb-0">
+                    Patient Records
+                </h5>
+
+                <span class="badge bg-primary"
+                      th:text="${#lists.size(patients)} + ' Records'">
+                    0 Records
+                </span>
+
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-primary">
+
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Age</th>
+                            <th>Gender</th>
+                            <th>Contact</th>
+                            <th>Address</th>
+                           
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr th:each="patient : ${patients}">
+
+                            <td th:text="${patient.patientId}"></td>
+
+                            <td class="fw-semibold"
+                                th:text="${patient.fullName}">
+                            </td>
+
+                            <td th:text="${patient.age}"></td>
+
+                            <td th:text="${patient.gender}"></td>
+
+                            <td th:text="${patient.contactNumber}"></td>
+
+                            <td th:text="${patient.address}"></td>
+
+                        
+
+                            <!-- Action Buttons -->
+                            <td class="action-buttons">
+
+                                <a th:href="@{/patients/view/{id}(id=${patient.patientId})}"
+                                   class="btn btn-info btn-sm mb-1">
+                                    View
+                                </a>
+
+                                <a th:href="@{/patients/edit/{id}(id=${patient.patientId})}"
+                                   class="btn btn-warning btn-sm mb-1">
+                                    Edit
+                                </a>
+
+                                <form th:action="@{/patients/delete/{id}(id=${patient.patientId})}"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Delete this patient record?');">
+
+                                    <input type="hidden"
+                                           th:name="${_csrf.parameterName}"
+                                           th:value="${_csrf.token}">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm mb-1">
+                                        Delete
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+
+                        <!-- No Records Message -->
+                        <tr th:if="${#lists.isEmpty(patients)}">
+
+                            <td colspan="8"
+                                class="text-center text-muted py-4">
+
+                                No patient records found.
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Footer -->
+    <div class="text-center footer-text mb-3">
+
+        Hospital Patient Record System |
+        Patient Records Management
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+</body>
+</html>
